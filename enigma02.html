@@ -1,0 +1,424 @@
+<!-- <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Labirinto do Segundo Dígito</title>
+
+<style>
+    :root {
+        --lilas: #dcd0ff;
+        --rosa-claro: #ffe4e1;
+        --rosa-forte: #ff8da1;
+        --lilas-escuro: #a286cc;
+        --fundo: #ffffff; /* Fundo de quadro branco */
+    }
+
+    body {
+        font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    /* INTRO */
+    #intro {
+        position: fixed;
+        inset: 0;
+        background: white;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transition: opacity 1s ease-in-out;
+    }
+
+    #intro p {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--lilas-escuro);
+        text-align: center;
+    }
+
+    #palhacinha {
+        width: 150px;
+        position: absolute;
+        left: -200px;
+        animation: passar 5s linear forwards;
+    }
+
+    @keyframes passar {
+        0% { left: -200px; transform: rotate(0deg); }
+        100% { left: 120%; transform: rotate(360deg); }
+    }
+
+    /* CONTAINER PRINCIPAL (ESTILO QUADRO) */
+    #game-container {
+        width: 90%;
+        max-width: 650px;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        border: 12px solid #ebebeb; /* Moldura do quadro */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1), inset 0 0 10px rgba(0,0,0,0.05);
+        text-align: center;
+        position: relative;
+    }
+
+    #caixa-texto {
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #333;
+        font-size: 1.2rem;
+        transition: opacity 0.5s;
+    }
+
+    .titulo-dica {
+        color: var(--rosa-forte);
+        font-weight: bold;
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    #btn-proximo {
+        background-color: var(--lilas-escuro);
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background 0.3s;
+    }
+
+    #btn-proximo:hover {
+        background-color: var(--rosa-forte);
+    }
+
+    .equacao {
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: #d11141;
+    }
+</style>
+</head>
+<body>
+
+<div id="intro">
+    <img src="img0101.jpeg" id="palhacinha" alt="José e Tia">
+    <p>Vai passando José e sua tia faltante na sua tela...</p>
+</div>
+
+<div id="game-container">
+    <div id="caixa-texto">
+        Avançamos no primeiro número do misterioso CPF do José! <br>
+        A titia mandou muito bem! Parabéns!
+    </div>
+    <button id="btn-proximo" onclick="proximoPasso()">Começar Segundo Enigma</button>
+</div>
+
+<script>
+const falas = [
+    "José é bem piadista e não vai facilitar o segundo número. Ele decidiu incorporar equações do segundo grau!",
+    
+    "Recado do José: 'Titia faltante, não é por maldade, mas por amor! Quero saber se a senhora aprendeu o que eu ensinei, igual a senhora descobre com os seus alunos com o que ensina a eles. Use papel e caneta!'",
+    
+    `<strong>Dica 1:</strong> Precisamos da soma dos números da sua idade. <br>
+    Considerando que a senhora nasceu em Dezembro de 1994. <br>
+    (Ex: Se a idade fosse 15, o valor seria 1+5 = 6).`,
+    
+    `<strong>Dica 2:</strong> 'Titia, are you okay?' <br>
+    Lembre-se da fórmula de Bhaskara: <br>
+    O <strong>a</strong> acompanha o x², o <strong>b</strong> acompanha o x e o <strong>c</strong> fica sozinho.`,
+    
+    `<strong>Dica 3:</strong> Resolva a equação: <br>
+    <span class="equacao">3x² + x - 4 = 0</span> <br>
+    No ± raiz de delta, use apenas o <strong>+</strong>, considerando esse primeiro valor de x.`,
+    
+    `<strong>Dica 4:</strong> Efraim deixou meio caminho andado: <br>
+    <span class="equacao">(-1 + <span style='font-size: 3rem;'>&radic;</span> 49) / 6</span>
+    <small>A raiz de 49 é 7.</small>`,
+
+    
+    `<strong>Dica 5:</strong> Pegue o valor da Dica 4 e some com o valor da Dica 1. <br>
+    Este é o segundo número! <br>
+    Detalhe: ele é <strong>primo e ímpar</strong>.`,
+    
+    // "<span style='font-size: 3rem;'>&radic;</span>" // Símbolo de raiz quadrada substituindo o texto final
+];
+
+let indice = 0;
+const caixaTexto = document.getElementById('caixa-texto');
+const btn = document.getElementById('btn-proximo');
+
+function proximoPasso() {
+    caixaTexto.style.opacity = 0;
+    
+    setTimeout(() => {
+        if (indice < falas.length) {
+            caixaTexto.innerHTML = falas[indice];
+            btn.innerText = (indice === falas.length - 1) ? "Finalizar" : "Próxima Dica";
+            indice++;
+        } else {
+            indice = 0;
+            caixaTexto.innerHTML = "Boa sorte na resolução, Titia!";
+            btn.innerText = "Reiniciar Enigma";
+        }
+        caixaTexto.style.opacity = 1;
+    }, 500);
+}
+
+// Controle da Intro
+setTimeout(() => {
+    const intro = document.getElementById("intro");
+    intro.style.opacity = "0";
+    setTimeout(() => intro.style.display = "none", 1000);
+}, 5000);
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Labirinto do Segundo Dígito</title>
+
+<style>
+    :root {
+        --lilas: #dcd0ff;
+        --rosa-claro: #ffe4e1;
+        --rosa-forte: #ff8da1;
+        --lilas-escuro: #a286cc;
+        --grafite: #3a3a3a;
+        --fundo: #ffffff;
+    }
+
+    body {
+        font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    /* QUADRO BRANCO */
+    #game-container {
+        width: 85%;
+        max-width: 600px;
+        background: white;
+        padding: 40px;
+        border: 10px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        text-align: center;
+        z-index: 1;
+    }
+
+    #caixa-texto {
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: var(--grafite);
+        font-size: 1.2rem;
+        line-height: 1.6;
+        transition: opacity 0.4s ease;
+    }
+
+    #btn-proximo {
+        background-color: var(--lilas-escuro);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 30px;
+    }
+
+    .equacao {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        background: #f9f9f9;
+        padding: 2px 6px;
+        border-radius: 3px;
+        color: #d11141;
+    }
+
+    /* MODAL FINAL */
+    #modal-final {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+
+    #modal-conteudo {
+        background: linear-gradient(135deg, var(--rosa-claro), var(--lilas));
+        width: 90%;
+        max-width: 500px;
+        padding: 30px;
+        border-radius: 20px;
+        border: 5px solid white;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: popup 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popup {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    #foto-jose {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 5px solid var(--rosa-forte);
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+
+    #texto-modal {
+        color: #4a4a4a;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    #btn-modal {
+        background-color: var(--rosa-forte);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="caixa-texto">
+        Avançamos no primeiro número do misterioso CPF do José! <br>
+        A titia mandou muito bem! Parabéns!
+    </div>
+    <button id="btn-proximo" onclick="proximoPasso()">Começar Enigma</button>
+</div>
+
+<!-- Modal Lilás e Rosa -->
+<div id="modal-final">
+    <div id="modal-conteudo">
+        <img src="img0201.jpeg" id="foto-jose" alt="José">
+        <div id="texto-modal">uma simples frase do José...</div>
+        <button id="btn-modal" onclick="avancarMensagemFinal()">Continuar</button>
+    </div>
+</div>
+
+<script>
+const falas = [
+    "José é bem piadista e não vai facilitar o segundo número. Ele decidiu incorporar equações do segundo grau!",
+    "Recado do José: 'Titia faltante, não é por maldade, mas por amor! Quero saber se a senhora aprendeu o que eu ensinei, igual a senhora faz com seus alunos. <br> Use papel e caneta!'",
+    "<strong>Dica 1:</strong> Precisamos da soma dos números da sua idade. Considerando que a senhora nasceu em Dezembro de 1994. <br> (Ex: Se a idade fosse 15, o valor seria 1+5 = 6).",
+    "<strong>Dica 2:</strong>Lembre-se da fórmula de Bhaskara: O <strong>a</strong> acompanha o x², o <strong>b</strong> acompanha o x e o <strong>c</strong> fica sozinho.",
+    "<strong>Dica 3:</strong> Resolva a equação: <span class='equacao'>3x² + x - 4 = 0</span> No ± raiz de delta, use apenas o <strong>+</strong>, considerando esse primeiro valor de x.",
+    "<strong>Dica 4:</strong> Efraim deixou meio caminho andado: <span class='equacao'>(-1 + &radic;49) / 6</span>. <br><small>(Resolva a conta acima and Dica: &radic;49 = 7)</small>",
+    "<strong>Dica 5:</strong> Pegue o valor da Dica 4 e some com o valor da Dica 1. Este é o segundo número! Detalhe: ele é <strong>primo e ímpar.</strong>"
+];
+
+let indice = 0;
+let loopDigitacao;
+let faseModal = 0;
+const caixaTexto = document.getElementById('caixa-texto');
+const btn = document.getElementById('btn-proximo');
+
+function digitarTexto(html) {
+    clearInterval(loopDigitacao);
+    caixaTexto.style.opacity = "0";
+    
+    setTimeout(() => {
+        caixaTexto.innerHTML = "";
+        caixaTexto.style.opacity = "1";
+        btn.disabled = true;
+
+        let i = 0;
+        let tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        let fullText = tempDiv.innerHTML;
+
+        loopDigitacao = setInterval(() => {
+            if (fullText[i] === "<") {
+                i = fullText.indexOf(">", i) + 1;
+            } else {
+                i++;
+            }
+            caixaTexto.innerHTML = fullText.substring(0, i);
+            
+            if (i >= fullText.length) {
+                clearInterval(loopDigitacao);
+                btn.disabled = false;
+            }
+        }, 20);
+    }, 400);
+}
+
+function proximoPasso() {
+    if (indice < falas.length) {
+        digitarTexto(falas[indice]);
+        btn.innerText = (indice === falas.length - 1) ? "Finalizar" : "Próxima Etapa";
+        indice++;
+    } else {
+        abrirModal();
+    }
+}
+
+function abrirModal() {
+    document.getElementById('modal-final').style.display = 'flex';
+}
+
+function avancarMensagemFinal() {
+    const textoModal = document.getElementById('texto-modal');
+    const btnModal = document.getElementById('btn-modal');
+
+    if (faseModal === 0) {
+        textoModal.innerHTML = `
+            <strong>Espero que tenha resolvido o enigma, titia!</strong><br><br>
+            Buuuuuttt...., antes da senhora fechar aqui, quero deixar algumas palavras para a senhora:<br><br>
+            O seu jeito único me deixa feliz a cada dia mais! Além disso, tenho aprendido muito com a senhora, titia!<br>
+            Tenho aprendido a cada dia mais o que é amar, ter carinho pelo outro, perdoar... tenho aprendido a vibrar mais por mim mesmo e pelos outros, principalmente pela senhora... tenho aprendido com a senhora que a felicidade vem de pequenas atitudes... e tantos outros ensinamentos... muito obrigado, minha querida tia!!<br><br>
+            Além disso, tenho aprendido a não segurar o xixi... kkkkk<br><br>
+            Por favor..., não me abandone nunca! Amo-te, my titia faltante!
+        `;
+        btnModal.innerText = "Fechar";
+        faseModal = 1;
+    } else {
+        document.getElementById('modal-final').style.display = 'none';
+        location.reload(); // Recarrega para o início
+    }
+}
+</script>
+
+</body>
+</html>
